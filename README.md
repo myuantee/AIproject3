@@ -1,7 +1,7 @@
 # AIproject3
-Loan Application Modelling 
-Classification 1 : Naive Bayes
-Classification 2 : Decision Tree
+Loan Application Modelling \n\
+Classification 1 : Naive Bayes \n\
+Classification 2 : Decision Tree \n\
 Cluster Analysis : K-means
 
 # Team Member
