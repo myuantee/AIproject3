@@ -33,6 +33,14 @@ st.markdown("{0} classes are numerical data while {1} classes are categorical da
 st.markdown("""---""")
 st.subheader("Data Analysis before Preprocessing")
 
+st.markdown("Counts of values in **Decision**.")
+count = df.Decision.value_counts()
+st.write(count)
+
+fig, ax = plt.subplots(figsize = (2, 2))
+plt.pie(df.Decision.value_counts(), autopct='%1.0f%%', labels = ["Accept", "Reject"])
+st.pyplot(fig)
+
 st.markdown("**Correlation Matrix**")
 st.caption("computes pairwise correlation for numerical columns")
 df_corr = df.corr()
@@ -61,6 +69,7 @@ st.write(test_data)
 
 st.markdown("""---""")
 st.subheader("Data Analysis after Preprocessing")
+
 st.markdown("Let's investigate the correlation again after encoding the categorical data.")
 st.markdown("**Correlation Matrix**")
 test_data_corr = test_data.corr()
@@ -106,14 +115,13 @@ st.markdown("Naive Bayes Classifier is based on Bayes’ Theorem.")
 # creates Naive Bayes classifer object
 nb = GaussianNB()
 nb.fit(X_train, y_train)
-st.success("Training done.")
 
 # predicts the response for test dataset
 nb_pred = nb.predict(X_test)
 
 # accuracy
-st.markdown("**Accuracy:**")
-st.markdown(nb.score(X_test, y_test))
+nb_acc = "Accuracy: {}".format(nb.score(X_test, y_test))
+st.info(nb_acc)
 
 # confusion matrix
 st.markdown("**Confusion Matrix:**")
@@ -132,28 +140,50 @@ st.markdown("Decision Tree Classifier is a tree-structured classifier, where int
 # creates Decision Tree classifer object
 dt = DecisionTreeClassifier() # pruning the tree by setting the depth 
 dt = dt.fit(X_train, y_train)
-st.success("Training done.")
 
 # predicts the response for test dataset
 dt_pred = dt.predict(X_test)
 
 # accuracy
-st.markdown("**Accuracy before modifying parameter:**")
-st.markdown(dt.score(X_test, y_test))
+dt_acc1 = "Accuracy before parameter tuning: {}".format(dt.score(X_test, y_test))
+st.info(dt_acc1)
+dt_acc1 = dt.score(X_test, y_test)
 
-# modifies parameter
-st.markdown("Let's try to modify the Decision Tree parameter by changing *Gini* to *Entropy* and prune the tree by setting the depth at 2.")
-dt = DecisionTreeClassifier(criterion = "entropy", max_depth = 2)    #pruning the tree by setting the depth 
+# confusion matrix
+st.markdown("**Confusion Matrix:**")
+dt_matrix = metrics.confusion_matrix(y_test, dt_pred)
+
+fig, dt_cm = plt.subplots(figsize = (2, 1))
+dt_cm = sns.heatmap(dt_matrix, annot = True, xticklabels = [0, 1], yticklabels = [0, 1], cbar = False, fmt = "g")
+dt_cm.set_xlabel("Predicted label", fontsize = 5)
+dt_cm.set_ylabel("True label", fontsize = 5)
+st.pyplot(fig)
+
+st.markdown("Let's find the best parameters for Decision Tree to achieve higher accuracy by using Grid Search.")
+st.markdown("**Best Parameters:**")
+st.write({'criterion': 'entropy', 'max_depth': 29, 'max_features': 5, 'min_samples_leaf': 50})
+
+# tunes parameters
+st.markdown("Now, start tuning!")
+st.success("Tuning done.")
+
+dt = DecisionTreeClassifier(criterion = "entropy", max_depth = 29, max_features = 5, min_samples_leaf = 50) 
 dt = dt.fit(X_train, y_train)
 
 # predicts the response for test dataset
 dt_pred = dt.predict(X_test)
 
 # accuracy
-st.markdown("**Accuracy after modifying parameter:**")
-st.markdown(dt.score(X_test, y_test))
+dt_acc2 = "Accuracy after parameter tuning: {}".format(dt.score(X_test, y_test))
+st.info(dt_acc2)
+dt_acc2 = dt.score(X_test, y_test)
 
-st.markdown("**The accuracy increased!**")
+fig, ax = plt.subplots(figsize = (10, 5))
+plt.bar(["Before", "Tuning"], [dt_acc1, dt_acc2])
+plt.xlabel("Tuning")
+plt.ylabel("Accuracy")
+plt.title("Accuracy Comparison Before and After Parameter Tuning")
+st.pyplot(fig)
 
 # confusion matrix
 st.markdown("**Confusion Matrix:**")
@@ -207,6 +237,7 @@ plt.xlabel("Number of Clusters")
 plt.ylabel("Distortion")
 st.pyplot(fig)
 
+st.info("Number of Clusters = 5")
 st.markdown("In the graph above, we conclude that the \"elbow\" is 5. Now, we can train the model on the data set with the number of clusters 5.")
 st.markdown("Adjust the **Number of Clusters (k)** in the sidebar and investigate the scatter plot again.")
 
