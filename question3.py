@@ -122,6 +122,7 @@ nb_pred = nb.predict(X_test)
 # accuracy
 nb_acc = "Accuracy: {}".format(nb.score(X_test, y_test))
 st.info(nb_acc)
+nb_acc = nb.score(X_test, y_test)
 
 # confusion matrix
 st.markdown("**Confusion Matrix:**")
@@ -178,13 +179,6 @@ dt_acc2 = "Accuracy after parameter tuning: {}".format(dt.score(X_test, y_test))
 st.info(dt_acc2)
 dt_acc2 = dt.score(X_test, y_test)
 
-fig, ax = plt.subplots(figsize = (10, 5))
-plt.bar(["Before", "Tuning"], [dt_acc1, dt_acc2])
-plt.xlabel("Tuning")
-plt.ylabel("Accuracy")
-plt.title("Accuracy Comparison Before and After Parameter Tuning")
-st.pyplot(fig)
-
 # confusion matrix
 st.markdown("**Confusion Matrix:**")
 dt_matrix = metrics.confusion_matrix(y_test, dt_pred)
@@ -194,6 +188,17 @@ dt_cm = sns.heatmap(dt_matrix, annot = True, xticklabels = [0, 1], yticklabels =
 dt_cm.set_xlabel("Predicted label", fontsize = 5)
 dt_cm.set_ylabel("True label", fontsize = 5)
 st.pyplot(fig)
+
+
+st.subheader("Accuracy Comparison")
+fig, ax = plt.subplots(figsize = (10, 5))
+plt.bar(["Naive Bayes", "Decision Tree before Tuning", "Decision Tree after Tuning"], [nb_acc, dt_acc1, dt_acc2])
+plt.xlabel("Classifier")
+plt.ylabel("Accuracy")
+plt.title("Accuracy for Each Classifier")
+st.pyplot(fig)
+
+st.info("We can see Naive Bayes Classifier is having the highest accuracy and the accuracy of Decision Tree after tuning is increased.")
 
 # normalizes data
 scaled_data = normalize(test_data)
